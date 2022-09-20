@@ -23,9 +23,14 @@ func white_button(text string) *fyne.Container {
 	btn = widget.NewButton(text, func() {
 		fmt.Println("Here is Go Button")
 		fmt.Println(btn_color.FillColor)
-		btn_color.FillColor = color.Black
+		if btn_color.FillColor == color.White {
+			btn_color.FillColor = color.NRGBA{R: 123, G: 123, B: 123, A: 123}
+		} else {
+			btn_color.FillColor = color.White
+		}
 		container1.Refresh()
 	})
+	btn.Alignment = widget.ButtonAlignLeading
 	btn_color = canvas.NewRectangle(color.White)
 
 	container1 = container.New(
@@ -61,10 +66,10 @@ func main() {
 
 	contentText := widget.NewLabel("")
 
+	var ticket []string
 	// contentText := widget.NewButton("test", nil)
 	filesView.OnSelected = func(id widget.ListItemID) {
-
-		ticket := strings.Split(string(resource10kVTxt[id].StaticContent), "\n")
+		ticket = strings.Split(string(resource10kVTxt[id].StaticContent), "\n")
 		r := rand.New(rand.NewSource(time.Now().UnixNano()))
 		r.Shuffle(len(ticket), func(i, j int) {
 			ticket[i], ticket[j] = ticket[j], ticket[i]
@@ -76,16 +81,17 @@ func main() {
 	}
 
 	filesView.Select(0)
+	var boxs *fyne.Container
+
+	boxs = container.NewVBox()
+	for _, v := range ticket {
+		boxs.Add(white_button(v))
+	}
 
 	split := container.NewHSplit(
 		filesView,
 		// container.NewMax(contentText),
-		container.NewVBox(
-			white_button("123dvhihv"),
-			white_button("123dvhihv"),
-			white_button("123dvhihv"),
-			white_button("123dvhihv"),
-		),
+		boxs,
 	)
 
 	split.Offset = 0.2
